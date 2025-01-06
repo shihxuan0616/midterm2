@@ -72,3 +72,10 @@ def handle_message(event):
 
 if __name__ == "__main__":
     app.run()
+
+#azure endpoint https://c1101-m3x5ucqg-swedencentral.cognitiveservices.azure.com/openai/deployments/gpt-4/chat/completions?api-version=2024-08-01-preview
+#azure key      oe0uy1u2M6Opp143kEZc2XFUi99MOI6SMUvqlefxPoiVfU0isI51JQQJ99AKACfhMk5XJ3w3AAAAACOGz04d
+
+#啟動ngrok "ngrok http 5000"
+#將網址連入 line
+#執行程式
