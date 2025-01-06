@@ -1,15 +1,13 @@
-import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage, MessageEvent, TextMessage
-import requests
 
 app = Flask(__name__)
 
 # 設定你的 Channel Access Token 和 Channel Secret
-LINE_CHANNEL_ACCESS_TOKEN = 'yG7wKul+NpxFU9c0XaXSZiNMplH2JtYH62OhTNT/3yc5v/73oXXT/0gsSbULA3GLV8XNHD+90J/I5KvhSXmiLwrMo9UJIFQjo823gavlSfOchg'
-LINE_CHANNEL_SECRET = 'b4e1bfe3bb07c0893e0e5d282f4eefb3'
+LINE_CHANNEL_ACCESS_TOKEN = 'gM+wvmUdEhYU86zYXT5IPYxPj8r2rdzVkONURtTnofWRFi2hf/2hQOJiA59hFWhBr+Ds6J98URrFeRsc1tAL6jqJuPAPA+00Z5haeS1BHVOl5gxzeUI68i5rVgK0Nx8cvIwSQY3V7ZsVXDlMhxETcwdB04t89/1O/w1cDnyilFU='
+LINE_CHANNEL_SECRET = '7a5d3946285a4a0cce1312e6b1853bb0'
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
@@ -44,39 +42,38 @@ def handle_message(event):
     )
 
 def get_weather(city):
-    # 使用中央氣象局開放資料 API 查詢天氣
-    base_url = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001"
-    params = {
-        "Authorization": "你的授權碼",  # 需要在中央氣象局網站註冊並獲得授權碼
-        "format": "JSON",
-        "locationName": city,
+    # 模擬天氣資料
+    mock_weather_data = {
+        "台北": {
+            "description": "多雲時晴",
+            "temp_min": 20,
+            "temp_max": 28,
+            "rain_probability": 20
+        },
+        "高雄": {
+            "description": "晴天",
+            "temp_min": 22,
+            "temp_max": 30,
+            "rain_probability": 10
+        },
+        "台中": {
+            "description": "短暫陣雨",
+            "temp_min": 18,
+            "temp_max": 25,
+            "rain_probability": 40
+        }
     }
-    
-    response = requests.get(base_url, params=params)
-    
-    if response.status_code == 200:
-        data = response.json()
-        try:
-            location_data = data['records']['location'][0]
-            city_name = location_data['locationName']
-            weather_elements = location_data['weatherElement']
-            
-            # 提取天氣資訊
-            weather_description = weather_elements[0]['time'][0]['parameter']['parameterName']
-            temperature_min = weather_elements[2]['time'][0]['parameter']['parameterName']
-            temperature_max = weather_elements[4]['time'][0]['parameter']['parameterName']
-            rain_probability = weather_elements[1]['time'][0]['parameter']['parameterName']
-            
-            weather_info = (
-                f"{city_name}的天氣資訊：\n"
-                f"天氣狀況: {weather_description}\n"
-                f"氣溫範圍: {temperature_min}°C - {temperature_max}°C\n"
-                f"降雨機率: {rain_probability}%"
-            )
-        except (IndexError, KeyError):
-            weather_info = "抱歉，無法獲取該城市的天氣資訊，請確認城市名稱正確。"
+
+    weather = mock_weather_data.get(city)
+    if weather:
+        weather_info = (
+            f"{city}的天氣資訊：\n"
+            f"天氣狀況: {weather['description']}\n"
+            f"氣溫範圍: {weather['temp_min']}°C - {weather['temp_max']}°C\n"
+            f"降雨機率: {weather['rain_probability']}%"
+        )
     else:
-        weather_info = "抱歉，目前無法連線到氣象服務，請稍後再試。"
+        weather_info = "抱歉，目前無法提供該城市的天氣資訊。"
 
     return weather_info
 
